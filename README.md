@@ -1,4 +1,4 @@
-# CPPND Program a Concurrent Traffic Simulation
+# CPPND: Program a Concurrent Traffic Simulation
 
 <img src="data/traffic_simulation.gif"/>
 
