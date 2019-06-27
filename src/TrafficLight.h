@@ -34,7 +34,6 @@ class TrafficLight
 {
 public:
     // constructor / desctructor
-    TrafficLight();
 
     // getters / setters
 

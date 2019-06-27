@@ -43,6 +43,7 @@ public:
     std::vector<std::shared_ptr<Street>> queryStreets(std::shared_ptr<Street> incoming); // return pointer to current list of all outgoing streets
     void simulate();
     void vehicleHasLeft(std::shared_ptr<Vehicle> vehicle);
+    bool trafficLightIsGreen();
 
 private:
 

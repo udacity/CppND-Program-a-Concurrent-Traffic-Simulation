@@ -27,11 +27,9 @@ Throughout the Concurrency course, you have been developing a traffic simulation
 3. Compile: `cmake .. && make`
 4. Run it: `./traffic_simulation`.
 
-_Note: the code for this project **will not make** until the appropriate project steps below are complete_:
-
 ## Project Tasks
 
-See the classroom instruction and code comments for more details on each of these parts. Once you are finished with this project, your traffic simulation should run just as in the .gif file above. 
+When the project is built initially, all traffic lights will be green. When you are finished with the project, your traffic simulation should run with red lights controlling traffic, just as in the .gif file above. See the classroom instruction and code comments for more details on each of these parts. 
 
 - **Task FP.1** : Define a class `TrafficLight` which is a child class of `TrafficObject`. The class shall have the public methods `void waitForGreen()` and `void simulate()` as well as `TrafficLightPhase getCurrentPhase()`, where `TrafficLightPhase` is an enum that can be either `red` or `green`. Also, add the private method `void cycleThroughPhases()`. Furthermore, there shall be the private member `_currentPhase` which can take `red` or `green` as its value.
 - **Task FP.2** : Implement the function with an infinite loop that measures the time between two loop cycles and toggles the current phase of the traffic light between red and green and sends an update method to the message queue using move semantics. The cycle duration should be a random value between 4 and 6 seconds. Also, the while-loop should use `std::this_thread::sleep_`for to wait 1ms between two cycles. Finally, the private method `cycleThroughPhases` should be started in a thread when the public method `simulate` is called. To do this, use the thread queue in the base class.
