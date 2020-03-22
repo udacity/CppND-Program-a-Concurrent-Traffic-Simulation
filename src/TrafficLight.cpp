@@ -32,8 +32,6 @@ void MessageQueue<T>::send(T &&msg)
 
 
 /* Implementation of class "TrafficLight" */
-
-
 TrafficLight::TrafficLight()
 {
     _currentPhase = TrafficLightPhase::red;
@@ -41,16 +39,19 @@ TrafficLight::TrafficLight()
 
 void TrafficLight::waitForGreen()
 {
-    // FP.5b : add the implementation of the method waitForGreen, in which an infinite while-loop 
-    // runs and repeatedly calls the receive function on the message queue. 
-    // Once it receives TrafficLightPhase::green, the method returns.
+   
+    while(true){
+        if(_messageQueue.receive() == TrafficLightPhase::green) return;
+    }
 }
 
 TrafficLight::TrafficLightPhase TrafficLight::getCurrentPhase()
 {
     return _currentPhase;
 }
-
+ // FP.5b : add the implementation of the method waitForGreen, in which an infinite while-loop 
+    // runs and repeatedly calls the receive function on the message queue. 
+    // Once it receives TrafficLightPhase::green, the method returns.
 void TrafficLight::simulate()
 {
     // FP.2b : Finally, the private method „cycleThroughPhases“ should be started in a thread when the public method „simulate“ is called. 
@@ -69,8 +70,11 @@ void TrafficLight::cycleThroughPhases()
     //Random Machine generating a random cycle duration between 4-6s
     std::random_device rd;
     std::mt19937 mt(rd());
-    std::uniform_real_distribution<long long> dist(4.0,6.0);
-    long long cycleDuration = dist(mt);
+    std::uniform_real_distribution<float> dist(4.0,6.0);
+
+    float cycleDuration = dist(mt);
+   // std::cout << "Cycle " << cycleDuration1 <<std::endl;
+    //float cycleDuration = 4.0;
 
     //Set up initial time point 
     std::chrono::time_point<std::chrono::system_clock> startTimePoint;
@@ -78,8 +82,8 @@ void TrafficLight::cycleThroughPhases()
 
     //Measuring cycles 
     while(true){
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        long long elaspedTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()- startTimePoint).count();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        float elaspedTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now()- startTimePoint).count();
         if(elaspedTime >= cycleDuration){
             //toggle traffic light phase 
             _currentPhase = (_currentPhase==TrafficLightPhase::red) ? TrafficLightPhase::green : TrafficLightPhase::red;
