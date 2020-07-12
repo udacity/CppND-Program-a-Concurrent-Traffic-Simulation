@@ -68,7 +68,7 @@ void TrafficLight::simulate()
 }
 long TrafficLight::generateNewCycleIterval(){
     srand(time(0));
-    return (2000 + rand() % 4000);
+    return (rand() % 4000 + 2000);
 }
 
 // virtual function which is executed in a thread
@@ -87,13 +87,19 @@ void TrafficLight::cycleThroughPhases()
         long elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - lastUpdate).count();
         std::unique_lock<std::mutex> lck(_mutex);
         if (elapsed >= intervall) {
-            std::cout<< "NEw cycle";
-            _currentPhase = (_currentPhase == TrafficLightPhase::green) ? TrafficLightPhase::red : TrafficLightPhase::green;
-            future = std::async(std::launch::async, &MessageQueue<TrafficLightPhase>::send, traffic_light_queue, _currentPhase);
-            future.wait();
-            intervall = generateNewCycleIterval();
-            lastUpdate = std::chrono::system_clock::now();
+            if (_currentPhase == TrafficLightPhase::red) {
+                _currentPhase = TrafficLightPhase::green;
+                future = std::async(std::launch::async, &MessageQueue<TrafficLightPhase>::send, traffic_light_queue, _currentPhase);
+                intervall = generateNewCycleIterval();
+                future.wait();
+                lastUpdate = std::chrono::system_clock::now();
+            } else {
+                _currentPhase = TrafficLightPhase::red;
+                intervall = generateNewCycleIterval();
+                lastUpdate = std::chrono::system_clock::now();
+            }
         }
     }
     
+
 }
