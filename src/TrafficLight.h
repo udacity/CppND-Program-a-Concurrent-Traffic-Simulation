@@ -33,6 +33,12 @@ private:
 class TrafficLight
 {
 public:
+    TrafficLight();
+    void waitForGreen();
+    void simulate();
+    enum TrafficLightPhase { red, green };
+    TrafficLightPhase getCurrentPhase();
+    void cycleThroughPhases();
     // constructor / desctructor
 
     // getters / setters
@@ -46,6 +52,7 @@ private:
     // and use it within the infinite loop to push each new TrafficLightPhase into it by calling 
     // send in conjunction with move semantics.
 
+    TrafficLightPhase _currentPhase;
     std::condition_variable _condition;
     std::mutex _mutex;
 };
