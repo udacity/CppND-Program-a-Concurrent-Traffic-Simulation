@@ -41,6 +41,18 @@ void TrafficLight::waitForGreen()
     // FP.5b : add the implementation of the method waitForGreen, in which an infinite while-loop 
     // runs and repeatedly calls the receive function on the message queue. 
     // Once it receives TrafficLightPhase::green, the method returns.
+    const long cycleDuration = 2; //1 ms
+    auto thisMoment = std::chrono::system_clock::now();
+    while (true)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - thisMoment).count() >= cycleDuration)
+        {
+            auto msg = _msgQ.receive();
+            if ( msg == TrafficLightPhase::green)
+                return;
+        }
+    }
 }
 
 TrafficLightPhase TrafficLight::getCurrentPhase()
@@ -65,7 +77,7 @@ void TrafficLight::toggleLight()
 // virtual function which is executed in a thread
 void TrafficLight::cycleThroughPhases()
 {
-    const long cycleDuration = 4000; //4 seconds
+    const long cycleDuration = 400; //4 seconds
     // FP.2a : Implement the function with an infinite loop that measures the time between two loop cycles 
     // and toggles the current phase of the traffic light between red and green and sends an update method 
     // to the message queue using move semantics. The cycle duration should be a random value between 4 and 6 seconds. 
@@ -76,7 +88,12 @@ void TrafficLight::cycleThroughPhases()
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         if(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - thisMoment).count() >= cycleDuration)
         {
-            this->toggleLight();
+            if(_currentPhase == TrafficLightPhase::red) {
+                _currentPhase = TrafficLightPhase::green;
+            }
+            else {
+                _currentPhase = TrafficLightPhase::red;
+            }
             _msgQ.send(std::move(_currentPhase));
             thisMoment = std::chrono::system_clock::now();
         }
