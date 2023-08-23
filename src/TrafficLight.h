@@ -45,13 +45,8 @@ enum class TrafficLightPhase
 class TrafficLight : public TrafficObject
 {
 public:
-    // constructor / desctructor
+    // constructor
     TrafficLight();
-    ~TrafficLight();
-
-    // getters / setters
-
-
     // typical behaviour methods
     void waitForGreen();
     void simulate() override;
