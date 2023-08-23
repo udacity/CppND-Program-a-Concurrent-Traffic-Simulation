@@ -11,6 +11,7 @@ enum ObjectType
     objectVehicle,
     objectIntersection,
     objectStreet,
+    objectTrafficLight
 };
 
 class TrafficObject

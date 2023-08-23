@@ -15,7 +15,7 @@ T MessageQueue<T>::receive()
     _cond.wait(uLock, [this] { return !_messages.empty(); }); // pass unique lock to condition variable
         
     // retain last element of queue to return later
-    T msg = _messages.back();
+    T msg = std::move(_messages.back());
 
     // remove last vector element from queue
     _messages.pop_back();
@@ -43,6 +43,7 @@ void MessageQueue<T>::send(T &&msg)
 TrafficLight::TrafficLight()
 {
     _currentPhase = TrafficLightPhase::red;
+    _type = ObjectType::objectTrafficLight;
 }
 
 void TrafficLight::waitForGreen()
@@ -111,7 +112,9 @@ void TrafficLight::cycleThroughPhases()
 
             // send update method to the message queue using move semantics
             // FP.4b
-            _traffic_light_queue.send(std::move(_currentPhase));
+            // copy for not being moved 
+            TrafficLightPhase phase_to_move = _currentPhase;
+            _traffic_light_queue.send(std::move(phase_to_move));
 
             // reset stop watch for next cycle
             last_timestamp = std::chrono::system_clock::now();
