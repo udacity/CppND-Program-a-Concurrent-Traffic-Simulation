@@ -1,4 +1,5 @@
 #include <random>
+#include <thread>
 #include "TrafficLight.h"
 
 /* Implementation of class "MessageQueue" */
@@ -18,7 +19,7 @@ T MessageQueue<T>::receive()
     T msg = std::move(_messages.back());
 
     // remove last vector element from queue
-    _messages.pop_back();
+    _messages.clear();
 
     return msg;  // will not be copied due to return value optimization (RVO) in C++ 
 }
@@ -53,7 +54,10 @@ void TrafficLight::waitForGreen()
     // Once it receives TrafficLightPhase::green, the method returns.
 
     while(true)
-    {
+    {        
+        // Wait to not overstress CPU load
+        std::this_thread::sleep_for(std::chrono::microseconds(1));
+
         TrafficLightPhase new_traffic_light = _traffic_light_queue.receive();
         if (new_traffic_light==TrafficLightPhase::green)
         {
@@ -93,7 +97,7 @@ void TrafficLight::cycleThroughPhases()
         // Create a random cycle duration of value between 4 and 6 seconds
         std::random_device rd;
         std::mt19937 eng(rd());
-        std::uniform_real_distribution<> distr(4.0, 6.0);
+        std::uniform_real_distribution<> distr(4000.0, 6000.0);
         long cycle_duration = distr(eng);
 
         long time_since_last_cycle = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - last_timestamp).count();
@@ -112,8 +116,7 @@ void TrafficLight::cycleThroughPhases()
 
             // send update method to the message queue using move semantics
             // FP.4b
-            // copy for not being moved 
-            TrafficLightPhase phase_to_move = _currentPhase;
+            TrafficLightPhase phase_to_move = _currentPhase;    // copy for not being moved 
             _traffic_light_queue.send(std::move(phase_to_move));
 
             // reset stop watch for next cycle
